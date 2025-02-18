@@ -1,0 +1,13 @@
+CREATE TABLE pull_requests (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    number INTEGER NOT NULL,
+    state VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    body TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    closed_at TIMESTAMP,
+    diff TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
