@@ -6,10 +6,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@Profile("main")
-public class RepoWardenApplication {
+@EnableScheduling
+@Profile("background")
+public class SqsListenerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(RepoWardenApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SqsListenerApplication.class, args);
+    }
 }
