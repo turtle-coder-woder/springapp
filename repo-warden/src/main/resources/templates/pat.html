@@ -1,0 +1,32 @@
+<!doctype html>
+    <html lang="en" xmlns:th="http://www.thymeleaf.org"
+          th:replace="base :: Layout(~{::section} , ${hideNavbar})">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Home</title>
+    </head>
+    <body>
+    <section class="container mt-5">
+        <h1 class="mb-4">Your token is not with us</h1>
+        <p class="mb-4">Please enter token</p>
+        <div class="card p-4">
+            <form action="/submit-pat" method="post">
+                <div class="form-group mb-3">
+                    <label for="pat">Enter PAT Token:</label>
+                    <input type="text" class="form-control" id="pat" name="pat" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="org">Enter Org Name:</label>
+                    <input type="text" class="form-control" id="org" name="org" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="repo">Enter Repo Name:</label>
+                    <input type="text" class="form-control" id="repo" name="repo" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3 pt-5px">Submit</button>
+            </form>
+        </div>
+    </section>
+    </body>
+    </html>

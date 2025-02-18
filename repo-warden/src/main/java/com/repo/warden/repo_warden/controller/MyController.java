@@ -1,7 +1,9 @@
 package com.repo.warden.repo_warden.controller;
 
+import com.repo.warden.repo_warden.model.GitToken;
 import com.repo.warden.repo_warden.model.User;
 import com.repo.warden.repo_warden.service.CustomUserDetails;
+import com.repo.warden.repo_warden.service.GitTokenService;
 import com.repo.warden.repo_warden.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class MyController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    GitTokenService gitTokenService;
+
 
     @GetMapping("/about")
     public String about(Model model) {
@@ -38,7 +43,10 @@ public class MyController {
     @GetMapping("/")
     public String home(Model model, HttpSession session) {
         model.addAttribute("title", "Home Page");
-        model.addAttribute("session", session);
+        if(gitTokenService.findByCurrentUser() == null){
+            return "pat";
+        }
+
         return "home";
     }
 
@@ -73,5 +81,18 @@ public class MyController {
         }
 
         return "redirect:/signup?error";
+    }
+
+    @PostMapping("/submit-pat")
+    public String submitPat(@RequestParam("pat") String pat,
+                            @RequestParam("org") String org,
+                            @RequestParam("repo") String repo,
+                            HttpSession session) {
+        User currentUser = gitTokenService.currentUser();
+        if (currentUser != null) {
+            GitToken gitToken = GitToken.builder().user(currentUser).pat(pat).repo(repo).org(org).build();
+            gitTokenService.save(gitToken);
+        }
+        return "redirect:/";
     }
 }
