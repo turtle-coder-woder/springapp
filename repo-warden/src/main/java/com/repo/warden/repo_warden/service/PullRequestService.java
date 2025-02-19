@@ -53,11 +53,11 @@ public class PullRequestService {
     }
 
 
-    public List<PullRequests> getPrsByExternalId(List<Integer> prIds) {
-        return pullRequestsRepository.findByNumberIn(prIds);
+    public List<PullRequests> getPrsByExternalId(List<Integer> prIds, User user) {
+        return pullRequestsRepository.findByNumberInAndUser(prIds, user);
     }
 
-    public List<PullRequests> getPrsClosedLastWeek() {
-        return pullRequestsRepository.findByClosedAtAfter(LocalDateTime.now().minusDays(7));
+    public List<PullRequests> getPrsClosedLastWeek(User user) {
+        return pullRequestsRepository.findByClosedAtAfterAndUser(LocalDateTime.now().minusDays(7),user);
     }
 }

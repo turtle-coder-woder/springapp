@@ -4,7 +4,9 @@ import com.repo.warden.repo_warden.client.GenAiClient;
 import com.repo.warden.repo_warden.model.PullRequests;
 import com.repo.warden.repo_warden.pojo.genai.rca.GenerateContentRequestRCA;
 import com.repo.warden.repo_warden.pojo.genai.rca.GenerateContentResponse;
+import com.repo.warden.repo_warden.service.CurrentService;
 import com.repo.warden.repo_warden.service.PullRequestService;
+import com.repo.warden.repo_warden.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +15,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class GenAiService {
+public class GenAiService extends CurrentService {
     private final GenAiClient genAiClient;
     private final PullRequestService pullRequestService;
 
-    public GenAiService(GenAiClient genAiClient, PullRequestService pullRequestService) {
+    public GenAiService(UserService userService, GenAiClient genAiClient, PullRequestService pullRequestService) {
+        super(userService);
         this.genAiClient = genAiClient;
         this.pullRequestService = pullRequestService;
     }
+
 
     public List<PullRequests> getRCA(String incidentSubject, String incidentDescription) {
         String input = prepareInputForRequest(incidentSubject, incidentDescription);
@@ -28,7 +32,7 @@ public class GenAiService {
         List<GenerateContentResponse.Candidate.Content.Part.FunctionCall.Args.RelevantPr> relevantPrs = response.getCandidates().get(0).getContent().getParts().get(0).getFunctionCall().getArgs().getRelevant_prs();
         // return ids
         List<Integer> relevantPrsIds = relevantPrs.stream().map(GenerateContentResponse.Candidate.Content.Part.FunctionCall.Args.RelevantPr::getNumber).collect(Collectors.toList());
-        return pullRequestService.getPrsByExternalId(relevantPrsIds);
+        return pullRequestService.getPrsByExternalId(relevantPrsIds,currentUser());
     }
 
     private String prepareInputForRequest(String incidentSubject, String incidentDescription) {
@@ -44,7 +48,7 @@ public class GenAiService {
     }
 
     private String getPrsData() {
-        List<PullRequests> pullRequestsList = pullRequestService.getPrsClosedLastWeek();
+        List<PullRequests> pullRequestsList = pullRequestService.getPrsClosedLastWeek(currentUser());
         StringBuilder sb = new StringBuilder();
         pullRequestsList.forEach(pr -> {
             sb.append("PR ID: ").append(pr.getNumber()).append("\n   PR Subject: ").append(pr.getTitle()).append("\n   PR Description: ").append(pr.getDescription()).append("\n");
