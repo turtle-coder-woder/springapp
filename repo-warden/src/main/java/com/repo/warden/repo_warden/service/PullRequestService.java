@@ -56,4 +56,8 @@ public class PullRequestService {
     public List<PullRequests> getPrsByExternalId(List<Integer> prIds) {
         return pullRequestsRepository.findByNumberIn(prIds);
     }
+
+    public List<PullRequests> getPrsClosedLastWeek() {
+        return pullRequestsRepository.findByClosedAtAfter(LocalDateTime.now().minusDays(7));
+    }
 }

@@ -48,9 +48,14 @@ public class GenerateContentResponse {
                     @Getter
                     @Setter
                     public static class Args {
-                        private List<Integer> relevant_prs;
+                        private List<RelevantPr> relevant_prs;
 
-                        // Getters and setters
+                        @Getter
+                        @Setter
+                        public static class RelevantPr {
+                            private String reason;
+                            private int number;
+                        }
                     }
                 }
             }

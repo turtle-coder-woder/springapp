@@ -4,12 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Home</title>
+    <title>RCA Form</title>
 </head>
 <body>
-<section>
-    <h1>Home</h1>
-    <p>Welcome to the home page</p>
+<section class="container mt-5">
+    <h2 class="mb-4">RCA Form</h2>
+    <form th:action="@{/rca}" method="post">
+        <div class="form-group">
+            <label for="incidentSubject">Incident Subject</label>
+            <input type="text" class="form-control" id="incidentSubject" name="incidentSubject"
+                   placeholder="Enter incident subject" required>
+        </div>
+        <div class="form-group">
+            <label for="incidentDescription">Incident Description</label>
+            <textarea class="form-control" id="incidentDescription" name="incidentDescription" rows="4"
+                      placeholder="Enter incident description" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </section>
 </body>
 </html>

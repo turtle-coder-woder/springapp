@@ -108,10 +108,9 @@ public class MyController {
         return "redirect:/";
     }
 
-    @GetMapping("/rca")
-    public String rca(Model model) {
-//        List<PullRequests> pullRequestsList = genAiService.getRCA();
-        List<PullRequests> pullRequestsList = pullRequestService.getPrsByExternalId(List.of(1, 3, 2));
+    @PostMapping("/rca")
+    public String rca(Model model, @RequestParam("incidentSubject") String incidentSubject, @RequestParam("incidentDescription") String incidentDescription) {
+        List<PullRequests> pullRequestsList = genAiService.getRCA(incidentSubject, incidentDescription);
         model.addAttribute("pullRequestsList", pullRequestsList);
         return "rca";
     }

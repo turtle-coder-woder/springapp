@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -21,10 +22,33 @@ public class GenAiService {
         this.pullRequestService = pullRequestService;
     }
 
-    public List<PullRequests> getRCA(){
-        String input = "You are an AI assistant that helps identify relevant PRs for a new incident based on subject and description.\n\nA new incident has occurred. Here are the details:\n\nIncident Subject: Database connection timeout\nIncident Description: Users are reporting intermittent failures when accessing the application. The logs indicate frequent timeouts when connecting to the PostgreSQL database.\n\nHere are the recently deployed Pull Requests:\n1. PR ID: 1234\n   PR Subject: Improve database query performance\n   PR Description: Optimized several slow queries to improve response time.\n\n2. PR ID: 5678\n   PR Subject: Refactor API authentication\n   PR Description: Changed token validation mechanism for enhanced security.\n\nBased on the incident description, identify the relevant PRs that are contextual to the incident.";
+    public List<PullRequests> getRCA(String incidentSubject, String incidentDescription) {
+        String input = prepareInputForRequest(incidentSubject, incidentDescription);
         GenerateContentResponse response = genAiClient.generateContent(new GenerateContentRequestRCA(input)).block();
-        List<Integer> prIds = response.getCandidates().get(0).getContent().getParts().get(0).getFunctionCall().getArgs().getRelevant_prs();
-        return pullRequestService.getPrsByExternalId(prIds);
+        List<GenerateContentResponse.Candidate.Content.Part.FunctionCall.Args.RelevantPr> relevantPrs = response.getCandidates().get(0).getContent().getParts().get(0).getFunctionCall().getArgs().getRelevant_prs();
+        // return ids
+        List<Integer> relevantPrsIds = relevantPrs.stream().map(GenerateContentResponse.Candidate.Content.Part.FunctionCall.Args.RelevantPr::getNumber).collect(Collectors.toList());
+        return pullRequestService.getPrsByExternalId(relevantPrsIds);
+    }
+
+    private String prepareInputForRequest(String incidentSubject, String incidentDescription) {
+        StringBuilder sb = new StringBuilder().append("You are an AI assistant that helps identify relevant PRs for a new incident based on subject and description.\n\nA new incident has occurred. Here are the details:\n\n")
+                .append("Incident Subject: ")
+                .append(incidentSubject).
+                append("\nIncident Description: ")
+                .append(incidentDescription)
+                .append("\n\nHere are the recently deployed Pull Requests:\n\n")
+                .append(getPrsData())
+                .append("\n\nBased on the incident description, identify the relevant PRs that are contextual to the incident.");
+        return sb.toString();
+    }
+
+    private String getPrsData() {
+        List<PullRequests> pullRequestsList = pullRequestService.getPrsClosedLastWeek();
+        StringBuilder sb = new StringBuilder();
+        pullRequestsList.forEach(pr -> {
+            sb.append("PR ID: ").append(pr.getNumber()).append("\n   PR Subject: ").append(pr.getTitle()).append("\n   PR Description: ").append(pr.getDescription()).append("\n");
+        });
+        return sb.toString();
     }
 }
