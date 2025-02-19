@@ -12,4 +12,6 @@ public interface PullRequestsRepository extends JpaRepository<PullRequests, Long
     List<PullRequests> findByClosedAtAfterAndUser(LocalDateTime localDateTime, User user);
 
     List<PullRequests> findByNumberInAndUser(List<Integer> prIds, User user);
+
+    PullRequests findByIdAndUser(int prId, User user);
 }

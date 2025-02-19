@@ -2,8 +2,10 @@ package com.repo.warden.repo_warden.service.genai;
 
 import com.repo.warden.repo_warden.client.GenAiClient;
 import com.repo.warden.repo_warden.model.PullRequests;
+import com.repo.warden.repo_warden.pojo.genai.rca.GenerateContentRCADetailsRequest;
 import com.repo.warden.repo_warden.pojo.genai.rca.GenerateContentRequestRCA;
 import com.repo.warden.repo_warden.pojo.genai.rca.GenerateContentResponse;
+import com.repo.warden.repo_warden.pojo.genai.rca.ResponseDetailsRCA;
 import com.repo.warden.repo_warden.service.CurrentService;
 import com.repo.warden.repo_warden.service.PullRequestService;
 import com.repo.warden.repo_warden.service.UserService;
@@ -32,7 +34,7 @@ public class GenAiService extends CurrentService {
         List<GenerateContentResponse.Candidate.Content.Part.FunctionCall.Args.RelevantPr> relevantPrs = response.getCandidates().get(0).getContent().getParts().get(0).getFunctionCall().getArgs().getRelevant_prs();
         // return ids
         List<Integer> relevantPrsIds = relevantPrs.stream().map(GenerateContentResponse.Candidate.Content.Part.FunctionCall.Args.RelevantPr::getNumber).collect(Collectors.toList());
-        return pullRequestService.getPrsByExternalId(relevantPrsIds,currentUser());
+        return pullRequestService.getPrsByExternalId(relevantPrsIds, currentUser());
     }
 
     private String prepareInputForRequest(String incidentSubject, String incidentDescription) {
@@ -54,5 +56,11 @@ public class GenAiService extends CurrentService {
             sb.append("PR ID: ").append(pr.getNumber()).append("\n   PR Subject: ").append(pr.getTitle()).append("\n   PR Description: ").append(pr.getDescription()).append("\n");
         });
         return sb.toString();
+    }
+
+    public String getRcaDetails(int prId, String incidentSubject, String incidentDescription) {
+        PullRequests pr = pullRequestService.getPrByInternalId(prId, currentUser());
+        ResponseDetailsRCA responseDetailsRCA = genAiClient.generateContentDetails(new GenerateContentRCADetailsRequest(pr.getDiff(),incidentSubject,incidentDescription)).block();
+        return responseDetailsRCA.getCandidates().get(0).getContent().getParts().get(0).getFunctionCall().getArgs().getRca_html();
     }
 }

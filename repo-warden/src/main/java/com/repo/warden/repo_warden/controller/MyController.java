@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -55,7 +56,7 @@ public class MyController {
     @GetMapping("/")
     public String home(Model model, HttpSession session) {
         model.addAttribute("title", "Home Page");
-        if(gitTokenService.findByCurrentUser() == null){
+        if (gitTokenService.findByCurrentUser() == null) {
             return "pat";
         }
 
@@ -112,6 +113,16 @@ public class MyController {
     public String rca(Model model, @RequestParam("incidentSubject") String incidentSubject, @RequestParam("incidentDescription") String incidentDescription) {
         List<PullRequests> pullRequestsList = genAiService.getRCA(incidentSubject, incidentDescription);
         model.addAttribute("pullRequestsList", pullRequestsList);
+        model.addAttribute("incidentSubject", incidentSubject);
+        model.addAttribute("incidentDescription", incidentDescription);
         return "rca";
+    }
+
+
+    @PostMapping("/rcaDetails")
+    public String getRcaDetails(@RequestParam("id") int prId, Model model, @RequestParam("incidentSubject") String incidentSubject, @RequestParam("incidentDescription") String incidentDescription) {
+        // Call the service method to get RCA details
+        model.addAttribute("rcaDetails", genAiService.getRcaDetails(prId, incidentSubject, incidentDescription));
+        return "rcaDetails";
     }
 }

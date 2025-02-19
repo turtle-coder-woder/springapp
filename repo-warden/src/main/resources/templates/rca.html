@@ -16,6 +16,7 @@
                 <th>Title</th>
                 <th>Description</th>
                 <th>URL</th>
+                <th>RCA Details</th>
             </tr>
             </thead>
             <tbody>
@@ -24,6 +25,14 @@
                 <td th:text="${pullRequest.title}"></td>
                 <td th:text="${pullRequest.description}"></td>
                 <td><a th:href="${pullRequest.htmlUrl}" th:text="${pullRequest.htmlUrl}" target="_blank"></a></td>
+                <td>
+                    <form th:action="@{/rcaDetails}" method="post">
+                        <input type="hidden" name="id" th:value="${pullRequest.getId()}"/>
+                        <input type="hidden" name="incidentSubject" th:value="${incidentSubject}"/>
+                        <input type="hidden" name="incidentDescription" th:value="${incidentDescription}"/>
+                        <button type="submit" class="btn btn-primary">Details</button>
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
