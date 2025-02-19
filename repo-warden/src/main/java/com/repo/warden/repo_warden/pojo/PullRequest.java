@@ -10,9 +10,11 @@ import lombok.Setter;
 public class PullRequest {
     private String url;
     private String diff_url;
+    private String html_url;
     private Integer number;
     private String state;
     private String title;
+    private String description;
     private String body;
     private String closed_at;
 }

@@ -1,10 +1,14 @@
 package com.repo.warden.repo_warden.controller;
 
+import com.repo.warden.repo_warden.client.GenAiClient;
 import com.repo.warden.repo_warden.model.GitToken;
+import com.repo.warden.repo_warden.model.PullRequests;
 import com.repo.warden.repo_warden.model.User;
 import com.repo.warden.repo_warden.service.CustomUserDetails;
 import com.repo.warden.repo_warden.service.GitTokenService;
+import com.repo.warden.repo_warden.service.PullRequestService;
 import com.repo.warden.repo_warden.service.UserService;
+import com.repo.warden.repo_warden.service.genai.GenAiService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.List;
+
 @Controller
 public class MyController {
 
@@ -32,6 +38,12 @@ public class MyController {
 
     @Autowired
     GitTokenService gitTokenService;
+
+    @Autowired
+    GenAiService genAiService;
+
+    @Autowired
+    PullRequestService pullRequestService;
 
 
     @GetMapping("/about")
@@ -94,5 +106,13 @@ public class MyController {
             gitTokenService.save(gitToken);
         }
         return "redirect:/";
+    }
+
+    @GetMapping("/rca")
+    public String rca(Model model) {
+//        List<PullRequests> pullRequestsList = genAiService.getRCA();
+        List<PullRequests> pullRequestsList = pullRequestService.getPrsByExternalId(List.of(1, 3, 2));
+        model.addAttribute("pullRequestsList", pullRequestsList);
+        return "rca";
     }
 }

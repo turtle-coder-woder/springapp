@@ -34,6 +34,9 @@ public class PullRequestService {
             PullRequests pr = PullRequests.builder().state(pullRequest.getState())
                     .number(pullRequest.getNumber())
                     .title(pullRequest.getTitle())
+                    .description(pullRequest.getBody())
+                    .url(pullRequest.getUrl())
+                    .htmlUrl(pullRequest.getHtml_url())
                     .closedAt(getParsedDateTime(pullRequest.getClosed_at()))
                     .user(user)
                     .diff(diff).build();
@@ -50,4 +53,7 @@ public class PullRequestService {
     }
 
 
+    public List<PullRequests> getPrsByExternalId(List<Integer> prIds) {
+        return pullRequestsRepository.findByNumberIn(prIds);
+    }
 }

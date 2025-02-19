@@ -33,6 +33,15 @@ public class PullRequests {
     @Column(nullable = false)
     private String title;
 
+    @Column
+    private String description;
+
+    @Column
+    private String url;
+
+    @Column
+    private String htmlUrl;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
