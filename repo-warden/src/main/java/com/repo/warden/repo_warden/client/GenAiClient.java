@@ -24,7 +24,7 @@ public class GenAiClient {
 
     public GenAiClient(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder
-                .baseUrl("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro")
+                .baseUrl("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro")
                 .build();
     }
 
