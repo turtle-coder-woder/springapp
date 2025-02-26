@@ -58,7 +58,7 @@ public class PullRequestService {
     }
 
     public List<PullRequests> getPrsClosedLastWeek(User user) {
-        return pullRequestsRepository.findByClosedAtAfterAndUser(LocalDateTime.now().minusDays(7),user);
+        return pullRequestsRepository.findByClosedAtAfterAndUser(LocalDateTime.now().minusDays(20),user);
     }
 
     public PullRequests getPrByInternalId(int prId, User user) {
